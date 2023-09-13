@@ -5,11 +5,16 @@ import { useEffect, useState } from "react";
 
 const AvailableMeals = () => {
     const [meals, setMeals] = useState([]);
+    const [isLoading, setIsLoading] = useState(true);
+    const [httpError, setHttpError] = useState();
     useEffect(() => {
         const fetchMeals = async () => {
             const response = await fetch(
                 "https://react-food-order-app-f0c97-default-rtdb.firebaseio.com/meals.json"
             );
+            if (!response.ok) {
+                throw new Error("Something went wrong!");
+            }
             const responseData = await response.json(); // this will be an object resturned by Firebase. we want an array:
             const loadedMeals = [];
             for (const key in responseData) {
@@ -21,9 +26,27 @@ const AvailableMeals = () => {
                 });
             }
             setMeals(loadedMeals);
+            setIsLoading(false);
         };
-        fetchMeals();
+        fetchMeals().catch((e) => {
+            setIsLoading(false);
+            setHttpError(e.message);
+        });
     }, []);
+    if (isLoading) {
+        return (
+            <section className={classes.MealsLoading}>
+                <p>Loading...</p>
+            </section>
+        );
+    }
+    if (httpError) {
+        return (
+            <section className={classes.MealsError}>
+                <p>{httpError}</p>
+            </section>
+        );
+    }
     const mealsList = meals.map((meal) => (
         <MealItem
             key={meal.id}
