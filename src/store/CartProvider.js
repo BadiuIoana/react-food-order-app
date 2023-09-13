@@ -1,7 +1,7 @@
 import CartContext from "./cart-context";
 import { useReducer } from "react";
 
-const defaultCartState = { items: [], amount: 0 };
+const defaultCartState = { items: [], totalAmount: 0 };
 const cartReducer = (state, action) => {
     if (action.type === "ADD") {
         const updatedItems = state.items.concat(action.item); // concat returns a new array, it doesn't change the old array;
